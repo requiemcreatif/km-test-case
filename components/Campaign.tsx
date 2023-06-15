@@ -13,14 +13,15 @@ interface CampaignProps {
 
 const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
     const isActive = new Date() >= new Date(campaign.startDate) && new Date() <= new Date(campaign.endDate);
+    //const isActive = true;
 
     return (
-        <tr style={{ color: isActive ? 'green' : 'red' }}>
-            <td>{campaign.name}</td>
-            <td>{campaign.startDate}</td>
-            <td>{campaign.endDate}</td>
-            <td>{isActive ? 'Active' : 'Inactive'}</td>
-            <td>{campaign.Budget}</td>
+        <tr className={isActive ? "bg-green-200" : "bg-red-200"}>
+            <td className="border px-4 py-2">{campaign.name}</td>
+            <td className="border px-4 py-2">{campaign.startDate}</td>
+            <td className="border px-4 py-2">{campaign.endDate}</td>
+            <td className="border px-4 py-2">{isActive ? "Active" : "Inactive"}</td>
+            <td className="border px-4 py-2">{campaign.Budget}</td>
         </tr>
     );
 }
