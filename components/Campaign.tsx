@@ -15,6 +15,7 @@ const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
     const startDate = new Date(campaign.startDate);
     const endDate = new Date(campaign.endDate);
     const today = new Date();
+    const budgetFormatted = campaign.Budget.toLocaleString();
 
     // Format date strings
     const startDateFormatted = `${(startDate.getMonth()+1).toString().padStart(2, '0')}/${startDate.getDate().toString().padStart(2, '0')}/${startDate.getFullYear()}`;
@@ -29,7 +30,7 @@ const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
             <td className="border px-4 py-2">{isActive ? "Active" : "Inactive"}</td>
             <td className="border px-4 py-2">{startDateFormatted}</td>
             <td className="border px-4 py-2">{endDateFormatted}</td>   
-            <td className="border px-4 py-2">${campaign.Budget}</td>
+            <td className="border px-4 py-2">${budgetFormatted}</td>
         </tr>
     );
 }
