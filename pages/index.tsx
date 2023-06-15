@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Inter } from 'next/font/google'
 import Campaign from '@/components/Campaign'
 import { campaignData } from '@/data/campainData'
+import SearchBar from '@/components/SerachBar';
 
 
 
@@ -23,16 +24,23 @@ if(setCampaignsGlobal) setCampaignsGlobal(oldCampaigns => [...oldCampaigns, ...n
 
 
 export default function Home() {
-
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [campaigns, setCampaigns] = useState<CampaignProps[]>([]);
 
   useEffect(() => {
     setCampaigns(campaignData);
 }, []);
 
+setCampaignsGlobal = setCampaigns;
+
+    const filteredCampaigns = campaigns.filter(campaign =>
+        campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
 
 return (
   <div className="container mx-auto px-4">
+    <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <table className="w-full table-auto">
                 <thead>
                     <tr className="bg-gray-100 text-left ">
@@ -44,7 +52,7 @@ return (
                     </tr>
                 </thead>
                 <tbody>
-                    {campaigns.map(campaign => <Campaign key={campaign.id} campaign={campaign} />)}
+                {filteredCampaigns.map(campaign => <Campaign key={campaign.id} campaign={campaign} />)}
                 </tbody>
             </table>
         </div>
