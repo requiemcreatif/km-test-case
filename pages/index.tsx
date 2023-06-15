@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import useSWR from 'swr';
 import { Inter } from 'next/font/google'
 import Campaign from '@/components/Campaign'
 import { campaignData } from '@/data/campainData'
 import SearchBar from '@/components/SerachBar';
-
-
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,26 +15,19 @@ interface CampaignProps {
   Budget: number
 }
 
-let setCampaignsGlobal: React.Dispatch<React.SetStateAction<CampaignProps[]>> | null = null;
-
-export const addCampaigns = (newCampaigns: CampaignProps[]) => {
-if(setCampaignsGlobal) setCampaignsGlobal(oldCampaigns => [...oldCampaigns, ...newCampaigns]);
-}
-
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [campaigns, setCampaigns] = useState<CampaignProps[]>([]);
+  
+  const fetcher = (url: string) => fetch(url).then(res => res.json())
+  const { data: campaigns, error } = useSWR('/api/campaign', fetcher);
 
-  useEffect(() => {
-    setCampaigns(campaignData);
-}, []);
+  if (error) return <div>Failed to load campaigns</div>
+  if (!campaigns) return <div>Loading...</div>
 
-setCampaignsGlobal = setCampaigns;
-
-    const filteredCampaigns = campaigns.filter(campaign =>
-        campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const filteredCampaigns = campaigns.filter((campaign: CampaignProps) =>
+    campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
 
 return (
@@ -52,7 +44,9 @@ return (
                     </tr>
                 </thead>
                 <tbody>
-                {filteredCampaigns.map(campaign => <Campaign key={campaign.id} campaign={campaign} />)}
+                {filteredCampaigns.map((campaign: CampaignProps) => (
+            <Campaign key={campaign.id} campaign={campaign} />
+          ))}
                 </tbody>
             </table>
         </div>
