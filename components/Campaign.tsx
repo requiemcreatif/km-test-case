@@ -26,10 +26,10 @@ const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
     return (
         <tr className={isActive ? "bg-green-200" : "bg-red-200"}>
             <td className="border px-4 py-2">{campaign.name}</td>
-            <td className="border px-4 py-2">{startDateFormatted}</td>
-            <td className="border px-4 py-2">{endDateFormatted}</td>
             <td className="border px-4 py-2">{isActive ? "Active" : "Inactive"}</td>
-            <td className="border px-4 py-2">{campaign.Budget}</td>
+            <td className="border px-4 py-2">{startDateFormatted}</td>
+            <td className="border px-4 py-2">{endDateFormatted}</td>   
+            <td className="border px-4 py-2">${campaign.Budget}</td>
         </tr>
     );
 }
