@@ -15,12 +15,24 @@ const DateRange: React.FC<DateRangeProps> = ({
   setEndDate,
   handleReset,
 }) => {
+
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedEndDate = new Date(event.target.value);
+    const currentStartDate = new Date(startDate);
+
+    // if selected end date is greater than or equal to start date, update the end date
+    if (selectedEndDate >= currentStartDate) {
+      setEndDate(event.target.value);
+    } else {
+      alert("End date can't be before the start date");
+    }
+  };
   return (
     <div className='p-5  max-w-md grid grid-cols-1 gap-5'>
       <div className='grid grid-cols-1 lg:grid-cols gap-5'>
         <div className=' flex items-center'>
           <label htmlFor='startDate' className='mr-2'>
-            Start Date:
+            Start
           </label>
           <input
             id='startDate'
@@ -33,14 +45,15 @@ const DateRange: React.FC<DateRangeProps> = ({
 
         <div className=' flex items-center'>
           <label htmlFor='endDate' className='mr-2'>
-            End Date:
+            End
           </label>
           <input
             id='endDate'
             className='shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
             type='date'
+            min={startDate}
             value={endDate}
-            onChange={(event) => setEndDate(event.target.value)}
+            onChange={handleEndDateChange}
           />
         </div>
       </div>

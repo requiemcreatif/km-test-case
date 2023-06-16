@@ -18,6 +18,14 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "data/campainData.js", "data/campainData.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "data/campainData.js",
+    "data/campainData.js",
+    "lib/utils.js",
+    "lib/utils.js"
+  ],
   "exclude": ["node_modules"]
 }

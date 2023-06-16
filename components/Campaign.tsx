@@ -1,10 +1,9 @@
 import React from "react";
 import { AiFillCheckCircle, AiOutlineClose } from "react-icons/ai";
 
-
 interface CampaignProps {
   campaign: {
-    id: number;
+    id: string; 
     name: string;
     startDate: string;
     endDate: string;
@@ -12,25 +11,28 @@ interface CampaignProps {
   };
 }
 
+
 const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
+
+  // Convert date strings to Date objects
   const startDate = new Date(campaign.startDate);
   const endDate = new Date(campaign.endDate);
   const today = new Date();
   const budgetFormatted = campaign.Budget.toFixed(2).toLocaleString();
 
+  // Helper function for formatting the date
+  const formatDate = (date: Date): string => {
+    return `${(date.getMonth() + 1).toString().padStart(2, "0")}/${date
+      .getDate()
+      .toString()
+      .padStart(2, "0")}/${date.getFullYear()}`;
+  };
 
   // Format date strings
-  const startDateFormatted = `${(startDate.getMonth() + 1).toString().padStart(2, "0")}/${startDate
-    .getDate()
-    .toString()
-    .padStart(2, "0")}/${startDate.getFullYear()}`;
-  const endDateFormatted = `${(endDate.getMonth() + 1).toString().padStart(2, "0")}/${endDate
-    .getDate()
-    .toString()
-    .padStart(2, "0")}/${endDate.getFullYear()}`;
+  const startDateFormatted = formatDate(startDate);
+  const endDateFormatted = formatDate(endDate);
 
   const isActive = today >= startDate && today <= endDate;
-  //const isActive = true;
 
   return (
     <tr className={isActive ? "bg-green-200" : "bg-red-200"}>
@@ -50,7 +52,6 @@ const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
           </div>
         )}
       </td>
-
       <td className='border px-4 py-2'>{startDateFormatted}</td>
       <td className='border px-4 py-2'>{endDateFormatted}</td>
       <td className='border px-4 py-2'>${budgetFormatted}</td>

@@ -1,9 +1,37 @@
-// pages/api/campaigns.ts
-import axios from 'axios';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { campaignData } from '@/data/campainData';
+// import type { NextApiRequest, NextApiResponse } from 'next';
+// import { campaignData } from '@/data/campainData';
 
-// Define a type for your data
+// interface CampaignProps {
+//   id: number,
+//   name: string,
+//   startDate: string,
+//   endDate: string,
+//   Budget: number
+// }
+// interface ErrorResponse {
+//     message: string;
+//   }
+
+// export default async function handler(req: NextApiRequest, res: NextApiResponse<CampaignProps[] | ErrorResponse>) {
+//     if (req.method === 'GET') {
+//       try {
+//         res.status(200).json(campaignData);
+//       } catch (error) {
+//         res.status(500).json({ message: (error as Error).message });
+//       }
+      
+//     } else {
+//       res.setHeader('Allow', ['GET']);
+//       res.status(405).end(`Method ${req.method} Not Allowed`);
+//     }
+//   }
+  
+
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { campaignData as initialCampaignData } from '@/data/campainData';
+
+let campaignData = initialCampaignData;
+
 interface CampaignProps {
   id: number,
   name: string,
@@ -12,28 +40,31 @@ interface CampaignProps {
   Budget: number
 }
 
-// Define a type for error response
 interface ErrorResponse {
-    message: string;
-  }
+  message: string;
+}
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<CampaignProps[] | ErrorResponse>) {
-    // Check the request method
-    if (req.method === 'GET') {
-      try {
-        // You can use axios to fetch data from an external API here if needed
-        // const response = await axios.get('Your-API-URL-Here');
-        // res.status(200).json(response.data);
-        // Or use static data as in your example:
-        res.status(200).json(campaignData);
-      } catch (error) {
-        res.status(500).json({ message: (error as Error).message });
-      }
-      
+export default function handler(req: NextApiRequest, res: NextApiResponse<CampaignProps[] | ErrorResponse>) {
+  if (req.method === 'GET') {
+    res.status(200).json(campaignData);
+  } else if (req.method === 'POST') {
+    const newCampaign = req.body;
+
+    if (
+      !newCampaign.name ||
+      !newCampaign.startDate ||
+      !newCampaign.endDate ||
+      typeof newCampaign.Budget !== 'number'
+    ) {
+      res.status(400).json({ message: 'Invalid campaign data' });
+    } else if (new Date(newCampaign.startDate) > new Date(newCampaign.endDate)) {
+      res.status(400).json({ message: 'Start date must be before end date.' });
     } else {
-      // Handle any other HTTP method
-      res.setHeader('Allow', ['GET']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+      campaignData.push(newCampaign);
+      res.status(200).json({ message: 'Campaign added successfully.' });
     }
+  } else {
+    res.setHeader('Allow', ['GET', 'POST']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-  
+}

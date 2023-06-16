@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+
 import useSWR from "swr";
+
+import { usePersistedState } from "../hooks/usePersistedState";
 import Campaign from "@/components/Campaign";
 import SearchBar from "@/components/SearchBar";
 import DateRange from "@/components/DateRange";
 import { IoFilterSharp } from "react-icons/io5";
 import { MdFilterListOff } from "react-icons/md";
+import { addCampaigns } from "@/utils/campaignUtils";
+import { campaignData } from "@/data/campainData";
 
 interface CampaignProps {
-  id: number;
+  id: string;
   name: string;
   startDate: string;
   endDate: string;
@@ -18,40 +23,46 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-  const [dateRangeVisible, setDateRangeVisible] = useState<boolean>(true);
+  const [dateRangeVisible, setDateRangeVisible] = usePersistedState("dateRangeVisible", true);
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: campaigns, error } = useSWR("/api/campaign", fetcher);
 
-  
+  // Filter the campaigns
+  const filteredCampaigns = useMemo(() => {
+    return campaigns?.filter((campaign: CampaignProps) => {
+      const campaignStartDate = new Date(campaign.startDate);
+      const campaignEndDate = new Date(campaign.endDate);
+
+      const startDateCondition = !startDate || campaignStartDate >= new Date(startDate);
+      const endDateCondition = !endDate || campaignEndDate <= new Date(endDate);
+
+      return (
+        campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        startDateCondition &&
+        endDateCondition
+      );
+    });
+  }, [campaigns, searchTerm, startDate, endDate]);
+
+  useEffect(() => {
+    addCampaigns(campaignData);
+  }, []);
 
   if (error) return <div>Failed to load campaigns</div>;
   if (!campaigns) return <div>Loading...</div>;
 
+  // Reset date range
   const handleReset = () => {
     setStartDate("");
     setEndDate("");
   };
 
-  const filteredCampaigns = campaigns.filter((campaign: CampaignProps) => {
-    const campaignStartDate = new Date(campaign.startDate);
-    const campaignEndDate = new Date(campaign.endDate);
-
-    const startDateCondition = !startDate || campaignStartDate >= new Date(startDate);
-    const endDateCondition = !endDate || campaignEndDate <= new Date(endDate);
-
-    return (
-      campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      startDateCondition &&
-      endDateCondition
-    );
-  });
-
   return (
-    <div className='container mx-auto px-4'>
+    <div className='container mx-auto px-4 '>
       <div className=''>
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-        <div className="py-2">
+        <div className='py-2'>
           <button
             className='bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2'
             onClick={() => setDateRangeVisible(!dateRangeVisible)}>
@@ -70,7 +81,7 @@ export default function Home() {
         </div>
       </div>
 
-      <table className='w-full table-auto'>
+      <table className='w-full table-auto '>
         <thead>
           <tr className='bg-gray-100 text-left '>
             <th className='px-4 py-2 '>Name</th>
@@ -81,9 +92,13 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {filteredCampaigns.map((campaign: CampaignProps) => (
-            <Campaign key={campaign.id} campaign={campaign} />
-          ))}
+          {/* {filteredCampaigns.map((campaign: CampaignProps) => {
+            console.log("Rendering campaign with id:", campaign.id); // Add log here
+            return <Campaign key={campaign.id} campaign={campaign} />;
+          })} */}
+          {filteredCampaigns.map((campaign: CampaignProps, index: number) => (
+    <Campaign key={`${campaign.id}-${index}`} campaign={campaign} />
+  ))}
         </tbody>
       </table>
     </div>
