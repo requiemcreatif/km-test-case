@@ -35,9 +35,9 @@ const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
   const isActive = today >= startDate && today <= endDate;
 
   return (
-    <tr className={isActive ? "bg-green-200" : "bg-red-200"}>
-      <td className='border px-4 py-2'>{campaign.name}</td>
-      <td className='border px-4 py-2'>
+    <tr className={isActive ? "bg-green-200" : "bg-red-100"}>
+      <td className=' p-3 text-sm text-gray-700 whitespace-nowrap'>{campaign.name}</td>
+      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>
         {isActive ? (
           <div className="flex items-center gap-2">
             <AiFillCheckCircle className='text-green-700' />
@@ -52,9 +52,9 @@ const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
           </div>
         )}
       </td>
-      <td className='border px-4 py-2'>{startDateFormatted}</td>
-      <td className='border px-4 py-2'>{endDateFormatted}</td>
-      <td className='border px-4 py-2'>${budgetFormatted}</td>
+      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{startDateFormatted}</td>
+      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{endDateFormatted}</td>
+      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>${budgetFormatted}</td>
     </tr>
   );
 };

@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-
 import useSWR from "swr";
-
 import { usePersistedState } from "../hooks/usePersistedState";
 import Campaign from "@/components/Campaign";
 import SearchBar from "@/components/SearchBar";
@@ -24,6 +22,8 @@ export default function Home() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [dateRangeVisible, setDateRangeVisible] = usePersistedState("dateRangeVisible", true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const campaignsPerPage = 10;
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: campaigns, error } = useSWR("/api/campaign", fetcher);
@@ -45,12 +45,35 @@ export default function Home() {
     });
   }, [campaigns, searchTerm, startDate, endDate]);
 
+  // Add campaigns calling the addCampaigns function
   useEffect(() => {
     addCampaigns(campaignData);
   }, []);
 
+  // used to Handle errors during loading state
   if (error) return <div>Failed to load campaigns</div>;
   if (!campaigns) return <div>Loading...</div>;
+
+  // Pagination. This will only display 10 campaigns per page
+  const totalPages = Math.ceil(filteredCampaigns.length / campaignsPerPage);
+
+  // Go to next page
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  // Go to previous page
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const startIndex = (currentPage - 1) * campaignsPerPage;
+  const endIndex = startIndex + campaignsPerPage;
+  const displayedCampaigns = filteredCampaigns.slice(startIndex, endIndex);
 
   // Reset date range
   const handleReset = () => {
@@ -59,8 +82,8 @@ export default function Home() {
   };
 
   return (
-    <div className='container mx-auto px-4 '>
-      <div className=''>
+    <div className='container mx-auto px-4'>
+      <div>
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <div className='py-2'>
           <button
@@ -80,27 +103,33 @@ export default function Home() {
           )}
         </div>
       </div>
-
-      <table className='w-full table-auto '>
-        <thead>
-          <tr className='bg-gray-100 text-left '>
-            <th className='px-4 py-2 '>Name</th>
-            <th className='px-4 py-2'>Status</th>
-            <th className='px-4 py-2'>Start Date</th>
-            <th className='px-4 py-2'>End Date</th>
-            <th className='px-4 py-2'>Budget</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* {filteredCampaigns.map((campaign: CampaignProps) => {
-            console.log("Rendering campaign with id:", campaign.id); // Add log here
-            return <Campaign key={campaign.id} campaign={campaign} />;
-          })} */}
-          {filteredCampaigns.map((campaign: CampaignProps, index: number) => (
-    <Campaign key={`${campaign.id}-${index}`} campaign={campaign} />
-  ))}
-        </tbody>
-      </table>
+      <div className=" overflow-auto rounded-lg shadow">
+        <table className='w-full table-auto'>
+          <thead className='bg-gray-50 border-b-2 border-gray-200'>
+            <tr className='bg-gray-100 text-left'>
+              <th className='p-3 text-sm font-semibold tracking-wide text-left'>Name</th>
+              <th className='p-3 text-sm font-semibold tracking-wide text-left'>Status</th>
+              <th className='p-3 text-sm font-semibold tracking-wide text-left'>Start Date</th>
+              <th className='p-3 text-sm font-semibold tracking-wide text-left'>End Date</th>
+              <th className='p-3 text-sm font-semibold tracking-wide text-left'>Budget</th>
+            </tr>
+          </thead>
+          <tbody className='divide-y divide-gray-100'>
+            {displayedCampaigns.map((campaign: CampaignProps) => (
+              <Campaign key={campaign.id} campaign={campaign} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      <div className='flex justify-between p-4'>
+        <button disabled={currentPage === 1} onClick={goToPreviousPage}>
+          Previous
+        </button>
+        <button disabled={currentPage === totalPages} onClick={goToNextPage}>
+          Next
+        </button>
+      </div>
     </div>
   );
 }
