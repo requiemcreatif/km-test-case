@@ -23,4 +23,5 @@ To get started, clone the repository:
 ```bash
 git clone https://github.com/requiemcreatif/km-test-case.git
 cd km-test-case-app
+npm run dev
 ```
