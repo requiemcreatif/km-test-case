@@ -1,24 +1,19 @@
 import React from "react";
 import { AiFillCheckCircle, AiOutlineClose } from "react-icons/ai";
-
+import { Campaign as CampaignType } from "../utils/types";
 interface CampaignProps {
-  campaign: {
-    id: string; 
-    name: string;
-    startDate: string;
-    endDate: string;
-    Budget: number;
-  };
+  campaign: CampaignType;
 }
 
-
 const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
-
   // Convert date strings to Date objects
   const startDate = new Date(campaign.startDate);
   const endDate = new Date(campaign.endDate);
   const today = new Date();
-  const budgetFormatted = campaign.Budget.toFixed(2).toLocaleString();
+  const budgetFormatted = campaign.Budget.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   // Helper function for formatting the date
   const formatDate = (date: Date): string => {
@@ -35,20 +30,18 @@ const Campaign: React.FC<CampaignProps> = ({ campaign }) => {
   const isActive = today >= startDate && today <= endDate;
 
   return (
-    <tr className={isActive ? "bg-green-200" : "bg-red-100"}>
+    <tr className={isActive ? "bg-green-200" : "bg-red-50"}>
       <td className=' p-3 text-sm text-gray-700 whitespace-nowrap'>{campaign.name}</td>
       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>
         {isActive ? (
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             <AiFillCheckCircle className='text-green-700' />
             <span>Active </span>
-            
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             <AiOutlineClose className='text-red-500' />
             <span>Inactive </span>
-            
           </div>
         )}
       </td>

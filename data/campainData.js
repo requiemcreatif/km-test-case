@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
+// using uuidv4 to generate unique id for each campaign
 export const campaignData = [
     { "id": uuidv4(), "name": "Divavu", "startDate": "9/19/2014", "endDate": "3/9/2018", "Budget": 88377 },
     { "id": uuidv4(), "name": "Jaxspan", "startDate": "11/21/2017", "endDate": "2/21/2018", "Budget": 608715 },
