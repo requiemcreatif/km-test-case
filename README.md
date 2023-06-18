@@ -2,7 +2,7 @@
 
 This is a React-based application that helps manage advertising campaigns. It fetches campaign data from an API and displays the campaigns in a table. Users can filter the campaigns based on a search term and a date range.
 
-- [App hosted in Netlify:](https://darling-alpaca-0f0f64.netlify.app)
+- [https://darling-alpaca-0f0f64.netlify.app](https://darling-alpaca-0f0f64.netlify.app)
 
 ## Features
 
